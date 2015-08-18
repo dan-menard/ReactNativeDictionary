@@ -13,6 +13,9 @@ var {
   View,
 } = React;
 
+var WORDNIK_URL_BASE = 'http://api.wordnik.com:80/v4/word.json/';
+var SECRETS = require('./secrets.json')
+
 var Dictionary = React.createClass({
   getInitialState: function() {
     return {
@@ -35,6 +38,16 @@ var Dictionary = React.createClass({
         resultText: 'Loooking up "' + state.inputText + '"...'
       };
     });
+
+    fetch(WORDNIK_URL_BASE + text + "/definitions?api_key=" + SECRETS.api_key)
+      .then((response) => {
+        this.setState((state) => {
+          return {
+            resultText: JSON.parse(response._bodyText)[0].text
+          };
+        });
+      })
+      .catch((error) => console.warn(error));
   },
 
   render: function() {
@@ -53,7 +66,7 @@ var Dictionary = React.createClass({
         </Text>
       </View>
     );
-  }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -67,7 +80,7 @@ var styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
-  },
+  }
 });
 
 AppRegistry.registerComponent('Dictionary', () => Dictionary);
